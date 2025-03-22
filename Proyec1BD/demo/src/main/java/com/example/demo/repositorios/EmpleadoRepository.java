@@ -3,7 +3,7 @@ package com.example.demo.repositorios;
 import com.example.demo.entidades.Empleado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
-//import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -13,7 +13,8 @@ import java.util.List;
 public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
 
     @Procedure(procedureName = "sp_InsertarEmpleado")
-    int sp_InsertarEmpleado(String Nombre, BigDecimal Salario);
+    void sp_InsertarEmpleado(@Param("NombreCompleto") String NombreCompleto, @Param("Salario") BigDecimal Salario, @Param("Resultado") Integer resultado);
+
 
     @Procedure(procedureName = "sp_ObtenerEmpleadosOrdenados")
     List<Empleado> sp_ObtenerEmpleadosOrdenados();

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.Services.EmpleadoService;
 import com.example.demo.entidades.Empleado;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -21,7 +23,8 @@ public class EmpleadoController {
     }
 
     @GetMapping("/empleados")
-public String listarEmpleados(@RequestParam(value = "orden", required = false) String orden, Model model) {
+public String listarEmpleados(@RequestParam(value = "orden", required = false) String orden,
+                              @RequestParam(value = "mensaje", required = false) String mensaje, Model model) {
     List<Empleado> empleados;
     if ("desc".equals(orden)) {
         empleados = empleadoService.obtenerListaDescendente();
@@ -29,9 +32,13 @@ public String listarEmpleados(@RequestParam(value = "orden", required = false) S
         empleados = empleadoService.obtenerListaAscendente();
     }
     model.addAttribute("empleados", empleados);
+
+    // Agregar mensaje de éxito si viene en la URL
+    if (mensaje != null) {
+        model.addAttribute("mensaje", mensaje);
+    }
     return "empleados";
 }
-
 
     @GetMapping("/empleados/nuevo")
     public String mostrarFormularioNuevoEmpleado(Model model){
@@ -40,13 +47,30 @@ public String listarEmpleados(@RequestParam(value = "orden", required = false) S
     }
 
     @PostMapping("/empleados/guardar")
-    public String guardarEmpleado(@ModelAttribute Empleado empleado, Model model){
-        int resultado = empleadoService.guardar(empleado);
-        if (resultado == -1) {
-            model.addAttribute("error", "Error: Nombre de empleado ya existe.");
+    public String guardarEmpleado(@ModelAttribute Empleado empleado, Model model) {
+
+        //Validar que el nombre solo contenga letras o guiones
+        if (!empleado.getNombre().matches("[A-Za-z\\s-]+")) {
+            model.addAttribute("error", "El nombre solo puede contener letras, o separarse Nombre-Apellido.");
             return "nuevoEmpleado";
         }
-        model.addAttribute("mensaje", "Inserción exitosa.");
-        return "redirect:/empleados";
+
+        //Validar que el salario sea un número válido
+        if ((empleado.getSalario() == null) || (empleado.getSalario().compareTo(BigDecimal.ZERO) <= 0)) {
+            model.addAttribute("error", "El salario debe ser un número positivo válido.");
+            return "nuevoEmpleado";
+        }
+
+        //Insertar en la base de datos
+        int resultado = empleadoService.guardar(empleado);
+
+        // Si el nombre ya existe, mostrar error
+        if (resultado == -1) {
+            model.addAttribute("error", "Error: El nombre de empleado ya existe.");
+            return "nuevoEmpleado";
+        }
+
+        //Redirigir con mensaje de éxito
+        return "redirect:/empleados?mensaje=Insercion+exitosa";
     }
 }
