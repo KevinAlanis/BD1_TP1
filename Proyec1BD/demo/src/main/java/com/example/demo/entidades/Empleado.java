@@ -13,13 +13,13 @@ public class Empleado {
     private Integer id;
 
     @Column(nullable = false, length = 128)
-    private String nombre;
+    private String Nombre;
 
     @Column(nullable = false)
-    private BigDecimal salario;
+    private BigDecimal Salario;
 
-    public void setSalario(BigDecimal salario) {
-        this.salario = salario;
+    public void setSalario(BigDecimal Salario) {
+        this.Salario = Salario;
     }
 
     // Getters y Setters
@@ -32,15 +32,15 @@ public class Empleado {
     }
 
     public String getNombre() {
-        return nombre;
+        return Nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(String Nombre) {
+        this.Nombre = Nombre;
     }
 
     public BigDecimal getSalario() {
-        return salario;
+        return Salario;
     }
     
 }
